@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { DiaryEntry } from '../types';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://backend.istag.me/api';
 
 export const getDiaryEntries = async (): Promise<DiaryEntry[]> => {
   const response = await axios.get<DiaryEntry[]>(`${API_URL}/diary-entries`);
