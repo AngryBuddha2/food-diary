@@ -23,6 +23,7 @@ export const getDiaryEntries: RequestHandler = (req, res) => {
 };
 
 export const addDiaryEntry: RequestHandler = (req, res) => {
+  // console.log("req",req.body,"res",res);
   const { food, count } = req.body;
 
   if (!food || !count) {
