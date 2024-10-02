@@ -1,6 +1,6 @@
 // src/routes/foodRoutes.ts
 import express from 'express';
-import { getDiaryEntries, addDiaryEntry, deleteDiaryEntry } from '../controllers/foodController';
+import { getDiaryEntries, addDiaryEntry, deleteDiaryEntry } from '../controllers/foodController.js';
 
 const router = express.Router();
 

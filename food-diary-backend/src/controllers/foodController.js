@@ -1,29 +1,15 @@
-// src/controllers/foodController.ts
-import { FoodItem } from "../models/foodItem";
-import {
-  addFoodToDatabase,
-  getCaloriesForFood,
-} from "../services/calorieService";
-import { RequestHandler } from "express";
+// src/controllers/foodController.js
+import { addFoodToDatabase, getCaloriesForFood } from '../services/calorieService.js';
 
-interface DiaryEntry {
-  id: number;
-  date: string;
-  food: string;
-  count: number;
-  calories: number;
-}
-
-let diaryEntries: DiaryEntry[] = [];
+let diaryEntries = [];
 let currentEntryId = 1;
 let currentFoodId = 4; // Starting from 4 since 1-3 are predefined
 
-export const getDiaryEntries: RequestHandler = (req, res) => {
+export const getDiaryEntries = (req, res) => {
   res.json(diaryEntries);
 };
 
-export const addDiaryEntry: RequestHandler = (req, res) => {
-  // console.log("req",req.body,"res",res);
+export const addDiaryEntry = (req, res) => {
   const { food, count } = req.body;
 
   if (!food || !count) {
@@ -43,7 +29,7 @@ export const addDiaryEntry: RequestHandler = (req, res) => {
     }
 
     // Add new food to the database
-    const newFoodItem: FoodItem = {
+    const newFoodItem = {
       id: currentFoodId++,
       name: food,
       calories: inputCalories,
@@ -55,9 +41,9 @@ export const addDiaryEntry: RequestHandler = (req, res) => {
   const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
   // The previous check ensures calories is not null here
-  const totalCalories = calories! * count;
+  const totalCalories = calories * count;
 
-  const newEntry: DiaryEntry = {
+  const newEntry = {
     id: currentEntryId++,
     date,
     food,
@@ -69,12 +55,13 @@ export const addDiaryEntry: RequestHandler = (req, res) => {
   res.status(201).json(newEntry);
 };
 
-export const deleteDiaryEntry: RequestHandler = (req, res) => {
+export const deleteDiaryEntry = (req, res) => {
   const { id } = req.params;
   const index = diaryEntries.findIndex((entry) => entry.id === parseInt(id));
 
   if (index === -1) {
     res.status(404).json({ message: "Diary entry not found." });
+    return;
   }
 
   diaryEntries.splice(index, 1);
