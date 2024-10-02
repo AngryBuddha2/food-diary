@@ -1,6 +1,5 @@
-// src/types/index.ts
 export interface DiaryEntry {
-    id: number;
+    id: string;
     date: string;
     food: string;
     count: number;
@@ -14,4 +13,3 @@ export interface DiaryEntry {
     net: number;
     status: 'red' | 'yellow' | 'green';
   }
-  
