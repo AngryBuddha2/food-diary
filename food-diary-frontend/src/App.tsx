@@ -17,11 +17,17 @@ const App: React.FC = () => {
     fetchEntries();
   }, []);
 
+  const handleDelete = async (id: number) => {
+    await deleteDiaryEntry(id);
+    fetchEntries();
+    // setEntries(entries.filter(entry => entry.id !== id));
+  };
+
   return (
     <div className="App">
       <h1>Food Diary</h1>
       <DiaryEntryForm onAdd={fetchEntries} />
-      <DiaryEntryList entries={entries} />
+      <DiaryEntryList entries={entries} onDelete={handleDelete} />
     </div>
   );
 };

@@ -4,9 +4,10 @@ import { DiaryEntry } from '../types';
 
 interface Props {
   entries: DiaryEntry[];
+  onDelete: (id: number) => void;
 }
 
-const DiaryEntryList: React.FC<Props> = ({ entries }) => {
+const DiaryEntryList: React.FC<Props> = ({ entries, onDelete }) => {
   const groupedEntries = entries.reduce((acc, entry) => {
     if (!acc[entry.date]) {
       acc[entry.date] = [];
@@ -50,6 +51,7 @@ const DiaryEntryList: React.FC<Props> = ({ entries }) => {
                     <td>{entry.food}</td>
                     <td>{entry.count}</td>
                     <td>{entry.calories}</td>
+                    <td><button onClick={()=>onDelete(entry.id)}>delete</button></td>
                   </tr>
                 ))}
               </tbody>
