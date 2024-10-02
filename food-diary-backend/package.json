@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "npx tsx dist/index.js",
     "build": "tsc",
     "dev": "npx tsx src/index.ts",
     "test": "jest"
@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "arg": "^5.0.2",
     "cors": "^2.8.5",
     "express": "^4.21.0"
   },
