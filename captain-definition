@@ -24,8 +24,10 @@
     "COPY --from=backend-build /usr/src/app/backend/dist ./backend/dist",
     "COPY food-diary-backend/package*.json ./backend/",
     "COPY food-diary-frontend/package*.json ./frontend/",
+    "RUN cd backend && npm install",
     "RUN npm install -g serve",
-    "CMD [\"sh\", \"-c\", \"npx tsx backend/dist/index.js & serve -s frontend/dist\"]"
+    "EXPOSE 5173",
+    "CMD [\"sh\", \"-c\", \"npx tsx backend/dist/index.js & serve -s frontend/dist -l 5173\"]"
   ],
   "captainVersion": "1"
 }
