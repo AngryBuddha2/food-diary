@@ -1,6 +1,10 @@
 // src/controllers/foodController.ts
-import { FoodItem } from '../models/foodItem';
-import { getCaloriesForFood, addFoodToDatabase } from '../services/calorieService';
+import { FoodItem } from "../models/foodItem";
+import {
+  addFoodToDatabase,
+  getCaloriesForFood,
+} from "../services/calorieService";
+import { RequestHandler } from "express";
 
 interface DiaryEntry {
   id: number;
@@ -14,24 +18,27 @@ let diaryEntries: DiaryEntry[] = [];
 let currentEntryId = 1;
 let currentFoodId = 4; // Starting from 4 since 1-3 are predefined
 
-export const getDiaryEntries = (req, res) => {
+export const getDiaryEntries: RequestHandler = (req, res) => {
   res.json(diaryEntries);
 };
 
-export const addDiaryEntry = (req, res) => {
+export const addDiaryEntry: RequestHandler = (req, res) => {
   const { food, count } = req.body;
 
   if (!food || !count) {
-    return res.status(400).json({ message: 'Food and count are required.' });
+    res.status(400).json({ message: "Food and count are required." });
+    return;
   }
 
   let calories = getCaloriesForFood(food);
 
   if (calories === null) {
     const { calories: inputCalories } = req.body;
-
     if (!inputCalories) {
-      return res.status(400).json({ message: 'Calories are required for new food items.' });
+      res.status(400).json({
+        message: "Calories are required for new food items.",
+      });
+      return;
     }
 
     // Add new food to the database
@@ -44,8 +51,10 @@ export const addDiaryEntry = (req, res) => {
     calories = inputCalories;
   }
 
-  const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  const totalCalories = calories * count;
+  const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
+  // The previous check ensures calories is not null here
+  const totalCalories = calories! * count;
 
   const newEntry: DiaryEntry = {
     id: currentEntryId++,
@@ -59,12 +68,12 @@ export const addDiaryEntry = (req, res) => {
   res.status(201).json(newEntry);
 };
 
-export const deleteDiaryEntry = (req, res) => {
+export const deleteDiaryEntry: RequestHandler = (req, res) => {
   const { id } = req.params;
-  const index = diaryEntries.findIndex(entry => entry.id === parseInt(id));
+  const index = diaryEntries.findIndex((entry) => entry.id === parseInt(id));
 
   if (index === -1) {
-    return res.status(404).json({ message: 'Diary entry not found.' });
+    res.status(404).json({ message: "Diary entry not found." });
   }
 
   diaryEntries.splice(index, 1);
