@@ -2,24 +2,50 @@ import React, { useState } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { fetchFoodCalories } from '@/lib/utils';
 import { DiaryEntry } from '@/types';
 
 interface AddEntryFormProps {
     onAddEntry: (entry: DiaryEntry) => void;
+    getFoodCalories: (food: string, calories?: number) => Promise<{ food: string; calories: number  }>;
+    addFoodEntry: (food: string, calories: number) => void;
 }
 
-export function AddEntryForm({ onAddEntry }: AddEntryFormProps) {
+export function AddEntryForm({ onAddEntry, getFoodCalories, addFoodEntry }: AddEntryFormProps) {
     const [newEntry, setNewEntry] = useState<Partial<DiaryEntry>>({ date: new Date().toISOString().split('T')[0] });
 
     const handleFoodBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
         const food = e.target.value;
-        const calories = await fetchFoodCalories(food);
-        setNewEntry(prev => ({ ...prev, food, calories, count: 1 }));
+    
+        if (food) {
+            try {
+                const response = await getFoodCalories(food);
+                console.log('response',response);    
+                    const { calories } = response;
+                    console.log("Calories fetched from API: ", calories); // Debugging log to verify calories value
+    
+                    setNewEntry(prev => ({
+                        ...prev,
+                        food,
+                        calories,
+                        count: 1,
+                    }));
+                
+            } catch (error) {
+                console.warn("Food not found in directory, please enter calories manually.", error);
+                setNewEntry(prev => ({ ...prev, food, calories: undefined }));
+            }
+        }
     };
+    
 
-    const addEntry = () => {
+    const addEntry = async () => {
         if (newEntry.date && newEntry.food && newEntry.count && newEntry.calories) {
+            try {
+                await getFoodCalories(newEntry.food);
+            } catch (error) {
+                console.log(error);
+                await addFoodEntry(newEntry.food, newEntry.calories);
+            }
             onAddEntry({ /* id: Date.now().toString(),*/ ...newEntry as DiaryEntry });
             setNewEntry({ date: new Date().toISOString().split('T')[0] });
         }

@@ -5,7 +5,7 @@ import { Pagination } from '@/components/Pagination';
 import { DiaryEntry } from '@/types';
 
 // api endpoints 
-import { getDiaryEntries, addDiaryEntry, deleteDiaryEntry } from '@/services/diaryService';
+import { getDiaryEntries, addDiaryEntry, deleteDiaryEntry, getFoodCalories,addFoodEntry } from '@/services/diaryService';
 
 export function FoodDiary() {
     const [entries, setEntries] = useState<DiaryEntry[]>([]);
@@ -85,7 +85,7 @@ export function FoodDiary() {
         <div className="container mx-auto p-4 max-w-4xl">
             <h1 className="text-3xl font-bold mb-6 text-center">Food Diary</h1>
 
-            <AddEntryForm onAddEntry={addEntry} />
+            <AddEntryForm onAddEntry={addEntry} getFoodCalories= {getFoodCalories} addFoodEntry={addFoodEntry}/>
 
             {paginatedDates.map((date) => (
                 <DailyEntries

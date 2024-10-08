@@ -9,8 +9,8 @@ export const getDiaryEntries = (req, res) => {
   res.json(diaryEntries);
 };
 
-export const addDiaryEntry = (req, res) => {
-  const { food, count } = req.body;
+export const addDiaryEntry = async (req, res) => {
+  let { food, count, calories: inputCalories, date } = req.body;
 
   if (!food || !count) {
     res.status(400).json({ message: "Food and count are required." });
@@ -20,11 +20,8 @@ export const addDiaryEntry = (req, res) => {
   let calories = getCaloriesForFood(food);
 
   if (calories === null) {
-    const { calories: inputCalories } = req.body;
     if (!inputCalories) {
-      res.status(400).json({
-        message: "Calories are required for new food items.",
-      });
+      res.status(400).json({ message: "Calories are required for new food items." });
       return;
     }
 
@@ -38,9 +35,8 @@ export const addDiaryEntry = (req, res) => {
     calories = inputCalories;
   }
 
-  const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-
-  // The previous check ensures calories is not null here
+  date = date ?? new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+  console.log('date', date);
   const totalCalories = calories * count;
 
   const newEntry = {
@@ -55,6 +51,7 @@ export const addDiaryEntry = (req, res) => {
   res.status(201).json(newEntry);
 };
 
+
 export const deleteDiaryEntry = (req, res) => {
   const { id } = req.params;
   const index = diaryEntries.findIndex((entry) => entry.id === parseInt(id));
@@ -67,3 +64,58 @@ export const deleteDiaryEntry = (req, res) => {
   diaryEntries.splice(index, 1);
   res.status(204).send();
 };
+
+
+export const updateDiaryEntry = (req, res) => {
+  const { id } = req.params;
+  const { food, count, calories } = req.body;
+
+  const entryIndex = diaryEntries.findIndex((entry) => entry.id === parseInt(id));
+
+  if (entryIndex === -1) {
+    res.status(404).json({ message: "Diary entry not found." });
+    return;
+  }
+  let updatedCalories = calories;
+  // Update the entry
+  diaryEntries[entryIndex] = {
+    ...diaryEntries[entryIndex],
+    food,
+    count,
+    calories: updatedCalories * count,
+  };
+  res.status(200).json(diaryEntries[entryIndex]);
+};
+
+
+// src/controllers/foodController.js
+
+export const getFoodCalories = (req, res) => {
+  const { food } = req.params;
+  const calories = getCaloriesForFood(food);
+  
+  if (calories === null) {
+    return res.status(404).json({ message: "Food not found." });
+  }
+
+  return res.status(200).json({ food, calories });
+};
+
+export const addFoodEntry = (req, res) => {
+  const { food, calories } = req.body;
+
+  if (!food || !calories) {
+    return res.status(400).json({ message: "Food and calories are required to add a new entry." });
+  }
+
+  const newFoodItem = {
+    id: currentFoodId++,
+    name: food,
+    calories: parseInt(calories, 10),
+  };
+
+  addFoodToDatabase(newFoodItem);
+  return res.status(201).json(newFoodItem);
+};
+
+
